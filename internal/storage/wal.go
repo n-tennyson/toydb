@@ -47,6 +47,19 @@ func OpenWAL(path string) (*WAL, error) {
 	}, nil
 }
 
+func (w *WAL) CloseWAL() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	if w.file == nil {
+		return nil
+	}
+
+	err := w.file.Close()
+	w.file = nil
+	return err
+}
+
 func (w *WAL) AppendPut(key string, value []byte) error {
 	w.mu.Lock()         // lock the WAL to prevent concurrent appends
 	defer w.mu.Unlock() // ensure the WAL is unlocked when the function returns
