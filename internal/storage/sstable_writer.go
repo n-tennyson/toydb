@@ -30,6 +30,11 @@ func WriteSSTable(dir string, mem *MemTable) (*SSTable, error) {
 	keys := mem.Keys()
 
 	for _, key := range keys {
+
+		if key == "" {
+			continue
+		}
+
 		value, _ := mem.Get(key)
 
 		if err := binary.Write(file, binary.LittleEndian, uint32(len(key))); err != nil {
