@@ -1,6 +1,9 @@
 package storage
 
-import "errors"
+import (
+	"errors"
+	"sort"
+)
 
 type MemTable struct {
 	data        map[string][]byte
@@ -62,10 +65,24 @@ func (m *MemTable) MarkImmutable() {
 	m.immutable = true
 }
 
+func (m *MemTable) IsImmutable() bool {
+	return m.immutable
+}
+
 func (m *MemTable) Reset() {
 	m.data = make(map[string][]byte)
 	m.currentSize = 0
 	m.immutable = false
+}
+
+func (m *MemTable) Keys() []string {
+	keys := make([]string, len(m.data))
+	for key := range m.data {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+	return keys
 }
 
 func (m *MemTable) Iterator() {
